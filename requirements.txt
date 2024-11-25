@@ -6,4 +6,5 @@ sbx-rl
 optax
 jaxtyping
 tqdm
+tensorboard
 

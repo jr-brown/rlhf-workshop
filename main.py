@@ -9,16 +9,12 @@ import flax.linen as nn
 from copy import copy
 from functools import partial
 
-from jax.nn import log_softmax, one_hot
-
 from jaxtyping import Array, Float, Key
-
 from flax.training.train_state import TrainState
-
 from stable_baselines3.common.base_class import BaseAlgorithm
 
 from lib import(
-    visualise_trajectories,
+    visualise_trajectories,  # This might be helpful for implementing real human evaluation
     initialise,
     get_reward_fn,
     update_reward_fn,
@@ -46,22 +42,25 @@ class PreferenceModel(nn.Module):
     def __call__(
         self,
         prefs: Float[Array, "*batch"],
-        traj_1: Float[Array, "*batch transitions features"],
-        traj_2: Float[Array, "*batch transitions features"],
+        trajs_0: Float[Array, "*batch transitions features"],
+        trajs_1: Float[Array, "*batch transitions features"],
     ) -> Float[Array, ""]:
 
         if prefs.size == 0:
             return jnp.array([0])
 
         # Rewards per step of the trajectories
-        traj_1_rewards = self.reward_net(traj_1).squeeze(-1)
-        traj_2_rewards = self.reward_net(traj_2).squeeze(-1)
+        traj_0_rewards = self.reward_net(trajs_0).squeeze(-1)
+        traj_1_rewards = self.reward_net(trajs_1).squeeze(-1)
 
         # Total reward for each Trajectory
+        # Single dimensional vector of rewards, one for each trajectory
+        r0 = jnp.sum(traj_0_rewards, axis=-1)
         r1 = jnp.sum(traj_1_rewards, axis=-1)
-        r2 = jnp.sum(traj_2_rewards, axis=-1)
 
         # TODO: IMPLEMENT LOSS FUNCTION HERE
+        # Make sure to use `prefs`!
+        # If pref[i] == 0, then r0[i] > r1[i], else r0[i] < r1[i]
         raise NotImplementedError
 
 
@@ -103,6 +102,7 @@ def rlhf(
     rng = get_thread_rng(rng_seed=rng_seed)
     rng, ini_rng = jrnd.split(rng)
 
+    # Step 0: Initialise all the things we'll need
     (
         agent,
         model,
@@ -126,8 +126,10 @@ def rlhf(
     log.info("Beginning demonstration and preference RLHF")
 
     for i, agent_train_steps, num_train_prefs in schedule_iterator:
-        rng, pref_rng = jrnd.split(rng)
 
+        # Step 1: Get new preferences from the human/oracle
+
+        rng, pref_rng = jrnd.split(rng)
         new_pref_data = get_pref_data(
             pref_fn=partial(oracle_preferences, gt_reward_fn),
             num_prefs=num_train_prefs,
@@ -144,7 +146,7 @@ def rlhf(
             train_ds = {k: jnp.concatenate([v, new_pref_data[k]], axis=0)
                         for k, v in train_ds.items()}
 
-        # Step 3: Train Reward Model
+        # Step 2: Train reward model on preference dataset
 
         if (i == 0) and (initial_rm_train_multiplier is not None):
             adjusted_rm_train_kwargs = copy(rm_train_kwargs)
@@ -166,7 +168,7 @@ def rlhf(
         learnt_reward_fn = get_reward_fn(model, model_state.params)
         agent = update_reward_fn(agent, learnt_reward_fn)
 
-        # Step 4: Train agent and record rollouts
+        # Step 3: Train agent with reward model and record rollouts
 
         log.info("Training agent")
         traj_extractor = TrajectoryExtractorCallback()

@@ -11,7 +11,7 @@ import flax.linen as nn
 
 from copy import copy
 from tqdm import tqdm
-from typing import Callable, Any, Optional, Generator, Iterable, Type, Sequence, Tuple
+from typing import Callable, Any, Optional, Generator, Iterable, Type, Sequence
 from itertools import repeat
 from functools import partial
 from datetime import datetime
@@ -555,13 +555,13 @@ def get_pref_data(
 
     prefs = pref_fn(fragments_a, fragments_b, rng)
 
-    t1_xss = jnp.array([encode_traj(t) for t in fragments_a])
-    t2_xss = jnp.array([encode_traj(t) for t in fragments_b])
+    t0_xss = jnp.array([encode_traj(t) for t in fragments_a])
+    t1_xss = jnp.array([encode_traj(t) for t in fragments_b])
 
     return {
         "prefs": prefs,
-        "traj_1": t1_xss,
-        "traj_2": t2_xss,
+        "trajs_0": t0_xss,
+        "trajs_1": t1_xss,
     }
 
 
@@ -610,8 +610,8 @@ def initialise(
 
     example_input = {
         "prefs": jnp.array([0]),
-        "traj_1": encode_traj(random_trajs[0]),
-        "traj_2": encode_traj(random_trajs[1]),
+        "trajs_0": jnp.array([encode_traj(random_trajs[0])]),
+        "trajs_1": jnp.array([encode_traj(random_trajs[1])]),
     }
 
     rng, init_rng = jrnd.split(rng)
