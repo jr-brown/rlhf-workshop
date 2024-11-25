@@ -226,7 +226,7 @@ if __name__ == "__main__":
         },
         agent_train_kwargs={"log_interval": 4},
         initial_rm_train_multiplier=4,
-        num_to_visualise_per_iteration=None,
+        num_to_visualise_per_iteration=2,
         pref_max_old_traj_frac=0.2,
     )
 
