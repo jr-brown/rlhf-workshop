@@ -1,0 +1,7 @@
+jax
+flax
+gymnasium
+stable_baselines3
+sbx
+optax
+

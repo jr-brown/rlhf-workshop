@@ -1,0 +1,20 @@
+**/*.aux
+**/*.log
+**/*.out
+**/*.pdf
+**/*.bbl
+**/*.blg
+**/*.png
+
+**/venv
+**/__pycache__
+**/wandb/
+**/.tensorboard_logs/
+
+research_scaffold
+
+# Canonical 'ignore this stuff' folders
+projects/**/local/
+local/
+tmp/
+
