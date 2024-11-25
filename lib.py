@@ -19,7 +19,7 @@ from dataclasses import dataclass
 
 from jax.tree_util import tree_map
 
-from jaxtyping import Array, Key
+from jaxtyping import Array, Key, Shaped, Float, Bool
 
 from flax.jax_utils import replicate, unreplicate
 from flax.training.train_state import TrainState
@@ -28,19 +28,12 @@ from gymnasium.vector.utils import batch_space
 from stable_baselines3.common.vec_env import VecEnv, VecEnvWrapper, SubprocVecEnv, DummyVecEnv
 from stable_baselines3.common.base_class import BaseAlgorithm
 
-from gymnasium import spaces
-from gymnasium.envs.classic_control import utils
-from gymnasium.error import DependencyNotInstalled
-from gymnasium.vector import VectorEnv
 from gymnasium.vector.utils import batch_space
 
 from pprint import pformat
 from itertools import count
 
-from jax.tree_util import tree_map
-
 from optax import adamw
-from jaxtyping import Array, Key, Shaped, Float, Bool
 
 from flax.core import unfreeze
 from flax.training.train_state import TrainState
