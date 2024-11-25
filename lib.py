@@ -34,16 +34,7 @@ from gymnasium.error import DependencyNotInstalled
 from gymnasium.vector import VectorEnv
 from gymnasium.vector.utils import batch_space
 
-import jax
-import logging
-
-import jax.numpy as jnp
-import jax.random as jrnd
-import flax.linen as nn
-
-from tqdm import tqdm
 from pprint import pformat
-from typing import Callable, Optional
 from itertools import count
 
 from jax.tree_util import tree_map
