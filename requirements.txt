@@ -5,4 +5,5 @@ stable_baselines3
 sbx
 optax
 jaxtyping
+tqdm
 
