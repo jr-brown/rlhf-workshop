@@ -43,7 +43,7 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.base_class import BaseAlgorithm
 
-import reinforcement
+import reinforcement  # So that cartpole custom env is registered
 
 
 log = logging.getLogger(__name__)
