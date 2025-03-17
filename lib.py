@@ -368,7 +368,6 @@ non_linearities: dict[str, Callable[[Array], Array]] = {
 }
 
 normalisations: dict[str, Type[nn.Module]] = {
-    "batch": NotImplemented,  # Need to pass around batch_stats in TrainState to use this
     "layer": nn.LayerNorm,
     "instance": nn.InstanceNorm,
 }
